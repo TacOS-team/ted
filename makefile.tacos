@@ -1,0 +1,22 @@
+TARGET  := ted
+SRCS    := file.c line.c tty.c main.c
+OBJS    := ${SRCS:.c=.o} 
+
+LD=ld
+CCFLAGS = -Wall -Iinclude/  -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-builtin -I../tacos/libc/include/ -m32
+LDFLAGS = -L./ -Ttext=40000000 --entry=start_main -melf_i386
+LIBS    = ../tacos/lib/libc.a ../tacos/lib/libsystem.a
+
+.PHONY: all clean distclean 
+	all:: ${TARGET} 
+
+${TARGET}: ${OBJS} 
+	${LD} ${LDFLAGS} -o $@ $^ ${LIBS} 
+
+${OBJS}: %.o: source/%.c 
+	${CC} ${CCFLAGS} -o $@ -c $< 
+
+clean:: 
+	-rm -f ${OBJS} ${TARGET} 
+
+distclean:: clean
